@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Clientes com Liberação</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+    th, td { border: 1px solid #aaa; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    tr.selected { background-color: #ffe9e9; }
+    button { margin-right: 10px; padding: 5px 10px; }
+  </style>
+</head>
+<body>
+
+  <h2>Lista de Clientes com Liberação Pendente</h2>
+  <button onclick="addRow()">Adicionar Cliente</button>
+  <button onclick="removeSelected()">Remover Selecionado</button>
+  <button onclick="saveAsHTML()">Salvar HTML com Alterações</button>
+
+  <table id="clientesTable">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Status</th>
+        <th>Observações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr onclick="toggleSelection(this)">
+        <td contenteditable="true">Bradesco - Agência A</td>
+        <td contenteditable="true">Pendente</td>
+        <td contenteditable="true">Aguardando liberação</td>
+      </tr>
+      <tr onclick="toggleSelection(this)">
+        <td contenteditable="true">Itaú - Regional B</td>
+        <td contenteditable="true">Pendente</td>
+        <td contenteditable="true">Sem resposta</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    function addRow() {
+      const table = document.getElementById("clientesTable").getElementsByTagName('tbody')[0];
+      const newRow = table.insertRow();
+      newRow.onclick = () => toggleSelection(newRow);
+      for (let i = 0; i < 3; i++) {
+        const cell = newRow.insertCell();
+        cell.contentEditable = "true";
+        cell.innerText = "";
+      }
+    }
+
+    function removeSelected() {
+      const table = document.getElementById("clientesTable").getElementsByTagName('tbody')[0];
+      [...table.rows].forEach(row => {
+        if (row.classList.contains("selected")) row.remove();
+      });
+    }
+
+    function toggleSelection(row) {
+      row.classList.toggle("selected");
+    }
+
+    function saveAsHTML() {
+      const tableHTML = document.getElementById("clientesTable").outerHTML;
+      const fullHTML = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Clientes - Salvo</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+    th, td { border: 1px solid #aaa; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    tr.selected { background-color: #ffe9e9; }
+    button { margin-right: 10px; padding: 5px 10px; }
+  </style>
+</head>
+<body>
+  <h2>Lista de Clientes com Liberação Pendente</h2>
+  <table id="clientesTable">${tableHTML}</table>
+</body>
+</html>`;
+
+      const blob = new Blob([fullHTML], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "clientes_salvo.html";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>
